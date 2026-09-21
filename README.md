@@ -64,14 +64,28 @@ Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
 - [x] **Fine-tuning do BERTimbau** (`neuralmind/bert-base-portuguese-cased`),
       loop de treino manual em PyTorch (não `transformers.Trainer` — ver nota
       técnica abaixo) — ver [`src/finetune_bertimbau.py`](src/finetune_bertimbau.py).
-      Resultado no split aleatório: **F1 macro 0.92** no teste (vs. 0.82 do
-      baseline — +10 pontos), 3 épocas, ~9 min em GPU (MPS, Apple Silicon).
-      F1 de validação caiu levemente entre as épocas (0.914 → 0.910 → 0.909)
-      enquanto o loss de treino ia quase a zero — sinal de leve overfitting,
-      ainda assim o modelo final generaliza bem no teste.
-- [x] Avaliação rigorosa: F1 por classe, precisão/recall — não só acurácia
-      (ver resultado acima). Matriz de confusão fica pra quando a API/demo
-      estiver no ar.
+      3 épocas, ~9-10 min por split em GPU (MPS, Apple Silicon).
+- [x] Avaliação rigorosa: F1 por classe, precisão/recall, nos dois splits —
+      não só acurácia.
+
+**Resultado final — baseline vs. fine-tuning, nos dois splits:**
+
+| Modelo | F1 macro (aleatório) | F1 macro (por conta) | queda |
+|---|---|---|---|
+| TF-IDF + Regressão Logística | 0.82 | 0.77 | -0.05 |
+| **BERTimbau (fine-tuned)** | **0.92** | **0.90** | **-0.02** |
+
+O fine-tuning não só supera o baseline nos dois splits por larga margem
+(+10 e +13 pontos de F1), como **generaliza muito melhor** pra uma conta
+política que nunca viu no treino — a queda de performance é 2.5x menor que a
+do TF-IDF. Faz sentido: o BERTimbau entende semântica da frase, não só
+vocabulário específico de uma conta.
+
+Nota sobre o treino: o F1 de validação caiu levemente entre as épocas em
+ambos os splits (época 1 foi a melhor ou quase) enquanto o loss de treino ia
+a quase zero — sinal de leve overfitting a partir da época 2. O modelo final
+(época 3) ainda assim generaliza bem no teste, mas early stopping na época 1
+provavelmente teria um resultado igual ou melhor.
 - [ ] API (FastAPI) servindo o modelo treinado + interface simples pra testar
       (cola um texto, recebe a classificação)
 - [ ] Deploy público (mesmo padrão dos outros projetos: live demo + link no
