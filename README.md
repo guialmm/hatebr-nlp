@@ -34,20 +34,27 @@ de rótulo no mesmo dataset:
 **Licença**: uso acadêmico/pesquisa apenas (sem uso comercial sem autorização por
 escrito dos autores) — mesmo padrão do dataset da Olist no meu outro projeto: o
 dataset **não é versionado neste repositório**, só o código (MIT). Instruções de
-download em [`data/README.md`](data/README.md) (a criar).
+download em [`data/README.md`](data/README.md).
 
 Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
 [Hugging Face (`ruanchaves/hatebr`)](https://huggingface.co/datasets/ruanchaves/hatebr).
+
+> **Atualização (exploração inicial):** só a camada binária (ofensivo/
+> não-ofensivo) está pública — as camadas de nível de ofensividade e
+> grupo-alvo (as extensões multi-classe/multi-label da Fase 2) só existem na
+> versão 1.0 do dataset, que exige pedir acesso direto à autora. A Fase 2 foi
+> ajustada: ver [`data/README.md`](data/README.md) pra detalhes.
 
 ## Escopo completo
 
 ### Fase 1 — núcleo do projeto
 
-- [ ] Setup do repositório (estrutura, ambiente, dependências, licença)
-- [ ] Download + exploração do dataset (distribuição de classes, tamanho médio de
-      texto, checagem de duplicatas/qualidade)
+- [x] Setup do repositório (estrutura, ambiente, dependências, licença)
+- [x] Download + exploração do dataset (distribuição de classes, tamanho médio de
+      texto, checagem de duplicatas/qualidade) — ver [`src/explore.py`](src/explore.py)
 - [ ] Pré-processamento (limpeza de texto, tokenização, split treino/val/teste
-      estratificado)
+      estratificado + split por conta pra medir generalização — ver achado da
+      exploração em [`data/README.md`](data/README.md))
 - [ ] **Baseline clássico**: TF-IDF + Regressão Logística na tarefa binária —
       estabelece um número de referência antes do modelo pesado
 - [ ] **Fine-tuning do BERTimbau** (`neuralmind/bert-base-portuguese-cased`) via
@@ -63,12 +70,15 @@ Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
 
 ### Fase 2 — o que diferencia o projeto
 
-- [ ] Extensão multi-classe: nível de ofensividade (leve/moderado/alto)
-- [ ] Extensão multi-label: os 9 grupos-alvo simultaneamente
+- [ ] _(condicional — depende de acesso à versão 1.0, pedido à autora)_
+      Extensão multi-classe (nível de ofensividade) e multi-label (9
+      grupos-alvo)
 - [ ] Fine-tuning completo vs. **LoRA/PEFT** — comparar custo computacional,
       tempo de treino e acurácia entre as duas abordagens
-- [ ] Interpretabilidade (LIME ou attention weights) — mostrar quais palavras
-      pesaram na decisão do modelo pra cada predição
+- [ ] Interpretabilidade: gerar explicação do modelo (LIME) e comparar contra
+      os trechos que humanos de fato marcaram como justificativa
+      (`HateBRXplain` tem essas anotações) — mais rigoroso que só eyeball
+      qualitativo
 - [ ] Discussão de viés/limitações: o dataset é de comentários em posts
       políticos — até que ponto o modelo generaliza pra outros contextos?
 
