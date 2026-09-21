@@ -7,4 +7,6 @@ data/processed/
 data/*.csv
 *.pt
 *.bin
+*.safetensors
+models/
 .DS_Store

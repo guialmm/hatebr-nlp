@@ -61,10 +61,17 @@ Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
       o split aleatório infla um pouco o número (o modelo aprende sinais
       específicos da conta, não só linguagem ofensiva em geral). É o número
       de referência que o BERTimbau precisa superar de verdade.
-- [ ] **Fine-tuning do BERTimbau** (`neuralmind/bert-base-portuguese-cased`) via
-      Hugging Face Transformers, na tarefa binária (ofensivo/não-ofensivo)
-- [ ] Avaliação rigorosa: F1 por classe, precisão/recall, matriz de confusão —
-      não só acurácia (dataset tem nuance em "moderadamente ofensivo")
+- [x] **Fine-tuning do BERTimbau** (`neuralmind/bert-base-portuguese-cased`),
+      loop de treino manual em PyTorch (não `transformers.Trainer` — ver nota
+      técnica abaixo) — ver [`src/finetune_bertimbau.py`](src/finetune_bertimbau.py).
+      Resultado no split aleatório: **F1 macro 0.92** no teste (vs. 0.82 do
+      baseline — +10 pontos), 3 épocas, ~9 min em GPU (MPS, Apple Silicon).
+      F1 de validação caiu levemente entre as épocas (0.914 → 0.910 → 0.909)
+      enquanto o loss de treino ia quase a zero — sinal de leve overfitting,
+      ainda assim o modelo final generaliza bem no teste.
+- [x] Avaliação rigorosa: F1 por classe, precisão/recall — não só acurácia
+      (ver resultado acima). Matriz de confusão fica pra quando a API/demo
+      estiver no ar.
 - [ ] API (FastAPI) servindo o modelo treinado + interface simples pra testar
       (cola um texto, recebe a classificação)
 - [ ] Deploy público (mesmo padrão dos outros projetos: live demo + link no
@@ -85,6 +92,17 @@ Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
       qualitativo
 - [ ] Discussão de viés/limitações: o dataset é de comentários em posts
       políticos — até que ponto o modelo generaliza pra outros contextos?
+
+## Notas técnicas
+
+**Por que loop de treino manual em vez de `transformers.Trainer`?** Nesta
+máquina o Python do pyenv foi compilado sem suporte a `lzma`, o que quebra o
+import da lib `datasets` — e `Trainer` importa `datasets` incondicionalmente,
+mesmo sem usar nenhum recurso dela. Em vez de recompilar o Python do sistema,
+escrevi o loop de treino direto com `torch.optim.AdamW` +
+`get_linear_schedule_with_warmup` — o que também deixa explícito cada passo
+(forward, backward, clip de gradiente, scheduler) em vez de esconder atrás de
+`.fit()`.
 
 ## Stack (planejada)
 
