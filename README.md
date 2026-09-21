@@ -52,11 +52,15 @@ Fontes: [repositório oficial](https://github.com/franciellevargas/HateBR) ou
 - [x] Setup do repositório (estrutura, ambiente, dependências, licença)
 - [x] Download + exploração do dataset (distribuição de classes, tamanho médio de
       texto, checagem de duplicatas/qualidade) — ver [`src/explore.py`](src/explore.py)
-- [ ] Pré-processamento (limpeza de texto, tokenização, split treino/val/teste
-      estratificado + split por conta pra medir generalização — ver achado da
-      exploração em [`data/README.md`](data/README.md))
-- [ ] **Baseline clássico**: TF-IDF + Regressão Logística na tarefa binária —
-      estabelece um número de referência antes do modelo pesado
+- [x] Pré-processamento: split treino/val/teste estratificado (70/15/15) +
+      split por conta (5 contas treino, 1 de fora teste) — ver
+      [`src/split_data.py`](src/split_data.py)
+- [x] **Baseline clássico**: TF-IDF + Regressão Logística na tarefa binária —
+      ver [`src/baseline.py`](src/baseline.py). Resultado: **F1 0.82** no
+      split aleatório, **F1 0.77** no split por conta — a queda confirma que
+      o split aleatório infla um pouco o número (o modelo aprende sinais
+      específicos da conta, não só linguagem ofensiva em geral). É o número
+      de referência que o BERTimbau precisa superar de verdade.
 - [ ] **Fine-tuning do BERTimbau** (`neuralmind/bert-base-portuguese-cased`) via
       Hugging Face Transformers, na tarefa binária (ofensivo/não-ofensivo)
 - [ ] Avaliação rigorosa: F1 por classe, precisão/recall, matriz de confusão —
